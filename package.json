@@ -15,8 +15,10 @@
     "@react-three/postprocessing": "^3.1.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.46.0",
+    "postprocessing": "^6.39.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-is": "^19.3.0",
     "recharts": "^3.10.1",
     "three": "^0.186.0",
     "zustand": "^5.0.15"
