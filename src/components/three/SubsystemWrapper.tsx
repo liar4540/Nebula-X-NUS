@@ -56,14 +56,18 @@ export function SubsystemWrapper({ subsystemId, children, position = [0, 0, 0] }
         const pulse = Math.sin(time * 4) * 0.5 + 0.5;
         mat.color.copy(originalColor).lerp(STATUS_COLORS.broken, 0.4);
         mat.emissive.copy(statusColor);
-        mat.emissiveIntensity = 0.3 + pulse * 0.7;
+        // When selected, boost emissive intensity significantly
+        const baseIntensity = 0.3 + pulse * 0.7;
+        mat.emissiveIntensity = isSelected ? baseIntensity + 0.5 : baseIntensity;
       } else if (healthScore >= THRESHOLDS.warning) {
         // Warning: tint mesh orange + gentle pulse
         mat.color.copy(originalColor).lerp(STATUS_COLORS.warning, 0.25);
         mat.emissive.copy(statusColor);
-        mat.emissiveIntensity = 0.15 + Math.sin(time * 2) * 0.1;
+        const baseIntensity = 0.15 + Math.sin(time * 2) * 0.1;
+        // When selected, boost emissive intensity
+        mat.emissiveIntensity = isSelected ? baseIntensity + 0.4 : baseIntensity;
       } else {
-        // Normal: restore original color + subtle green emissive when healthy
+        // Normal: restore original color
         mat.color.copy(originalColor);
         if (hovered || isSelected) {
           mat.emissive.set(0x06b6d4);

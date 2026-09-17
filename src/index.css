@@ -4,7 +4,13 @@
   --bg-deep: #090D16;
   --bg-panel: rgba(15, 23, 42, 0.65);
   --bg-panel-solid: #0F172A;
+  --bg-panel-chrome: rgba(9, 13, 22, 0.92);
+  --bg-panel-glass: rgba(9, 13, 22, 0.88);
   --bg-hover: rgba(15, 23, 42, 0.85);
+  --bg-card: rgba(15, 23, 42, 0.3);
+  --bg-card-hover: rgba(15, 23, 42, 0.6);
+  --bg-btn: rgba(15, 23, 42, 0.6);
+  --bg-btn-hover: rgba(15, 23, 42, 0.9);
   --border-panel: rgba(148, 163, 184, 0.12);
   --border-active: rgba(6, 182, 212, 0.4);
   --text-primary: #F1F5F9;
@@ -28,7 +34,7 @@
 }
 
 html, body, #root {
-  width: 100dvw;
+  width: 100%;
   height: 100dvh;
   overflow: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -43,7 +49,13 @@ html, body, #root {
   --bg-deep: #F1F5F9;
   --bg-panel: rgba(255, 255, 255, 0.85);
   --bg-panel-solid: #FFFFFF;
+  --bg-panel-chrome: rgba(255, 255, 255, 0.95);
+  --bg-panel-glass: rgba(255, 255, 255, 0.92);
   --bg-hover: rgba(0, 0, 0, 0.05);
+  --bg-card: rgba(241, 245, 249, 0.5);
+  --bg-card-hover: rgba(226, 232, 240, 0.6);
+  --bg-btn: rgba(241, 245, 249, 0.8);
+  --bg-btn-hover: rgba(226, 232, 240, 0.9);
   --border-panel: rgba(15, 23, 42, 0.1);
   --border-active: rgba(6, 182, 212, 0.5);
   --text-primary: #0F172A;
@@ -61,17 +73,18 @@ html, body, #root {
     "topbar topbar topbar"
     "left   canvas right"
     "bottom bottom bottom";
-  width: 100dvw;
+  width: 100%;
   height: 100dvh;
   overflow: hidden;
   position: relative;
+  pointer-events: none;
 }
 
-.topbar { grid-area: topbar; z-index: 20; }
-.left-hud { grid-area: left; z-index: 10; }
-.canvas-area { grid-area: canvas; z-index: 1; }
-.right-hud { grid-area: right; z-index: 10; }
-.bottom-bar { grid-area: bottom; z-index: 20; }
+.topbar { grid-area: topbar; z-index: 20; pointer-events: auto; }
+.left-hud { grid-area: left; z-index: 10; pointer-events: auto; }
+.canvas-area { grid-area: canvas; z-index: 1; pointer-events: none; }
+.right-hud { grid-area: right; z-index: 10; pointer-events: auto; }
+.bottom-bar { grid-area: bottom; z-index: 20; pointer-events: auto; }
 
 /* ── Glass Panel ── */
 .glass-panel {
@@ -83,7 +96,7 @@ html, body, #root {
 }
 
 .glass-panel-solid {
-  background: rgba(9, 13, 22, 0.88);
+  background: var(--bg-panel-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-panel);
@@ -96,7 +109,7 @@ html, body, #root {
   justify-content: space-between;
   height: 100%;
   padding: 0 20px;
-  background: rgba(9, 13, 22, 0.92);
+  background: var(--bg-panel-chrome);
   border-bottom: 1px solid var(--border-panel);
   gap: 16px;
 }
@@ -126,7 +139,7 @@ html, body, #root {
 /* ── Dropdown ── */
 .train-selector {
   appearance: none;
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-btn);
   border: 1px solid var(--border-panel);
   border-radius: 8px;
   color: var(--text-primary);
@@ -148,12 +161,12 @@ html, body, #root {
 }
 
 .train-selector option {
-  background: #0F172A;
+  background: var(--bg-panel-solid);
   color: var(--text-primary);
 }
 
 .train-selector optgroup {
-  background: #0F172A;
+  background: var(--bg-panel-solid);
   color: var(--text-secondary);
   font-style: normal;
   font-weight: 600;
@@ -243,6 +256,7 @@ html, body, #root {
   padding: 12px;
   gap: 10px;
   overflow-y: auto;
+  overflow-x: visible;
 }
 
 .hud-section-title {
@@ -264,11 +278,11 @@ html, body, #root {
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
-  background: rgba(15, 23, 42, 0.3);
+  background: var(--bg-card);
 }
 
 .subsystem-card:hover {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-card-hover);
   border-color: var(--border-panel);
 }
 
@@ -387,6 +401,7 @@ html, body, #root {
   padding: 12px;
   gap: 12px;
   overflow-y: auto;
+  overflow-x: visible;
 }
 
 /* ── Anomaly Gauge ── */
@@ -420,11 +435,11 @@ html, body, #root {
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
-  background: rgba(15, 23, 42, 0.3);
+  background: var(--bg-card);
 }
 
 .model-card:hover {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-card-hover);
   border-color: var(--border-panel);
 }
 
@@ -528,15 +543,18 @@ html, body, #root {
   flex-direction: column;
   gap: 8px;
   padding: 10px 20px;
-  background: rgba(9, 13, 22, 0.92);
+  background: var(--bg-panel-chrome);
   border-top: 1px solid var(--border-panel);
   height: 100%;
+  overflow: hidden;
 }
 
 .bottom-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 /* ── Timeline Scrubber ── */
@@ -600,14 +618,14 @@ html, body, #root {
   height: 34px;
   border-radius: 8px;
   border: 1px solid var(--border-panel);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-btn);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .playback-btn:hover {
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--bg-btn-hover);
   color: var(--text-primary);
   border-color: var(--accent-cyan);
 }
@@ -616,7 +634,7 @@ html, body, #root {
   padding: 4px 10px;
   border-radius: 6px;
   border: 1px solid var(--border-panel);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-btn);
   color: var(--text-muted);
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
@@ -635,14 +653,14 @@ html, body, #root {
 .fault-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
+  gap: 4px;
+  padding: 5px 10px;
   border-radius: 8px;
   border: 1px solid var(--border-panel);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-btn);
   color: var(--text-secondary);
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -704,7 +722,7 @@ html, body, #root {
 .view-toggle-btn {
   padding: 4px 12px;
   border: none;
-  background: rgba(15, 23, 42, 0.5);
+  background: var(--bg-btn);
   color: var(--text-muted);
   font-family: 'Inter', sans-serif;
   font-size: 11px;
@@ -719,7 +737,7 @@ html, body, #root {
 }
 
 .view-toggle-btn:hover {
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-btn-hover);
   color: var(--text-secondary);
 }
 
@@ -811,7 +829,7 @@ html, body, #root {
   margin-top: 20px;
   border-radius: 10px;
   border: 1px solid var(--border-panel);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-btn);
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -959,8 +977,10 @@ html, body, #root {
   height: 100%;
   z-index: 501;
   pointer-events: auto;
-  transition: all 0.4s ease;
+  cursor: default;
 }
+
+
 
 .tour-spotlight {
   position: absolute;
@@ -1054,7 +1074,7 @@ html, body, #root {
   padding: 6px 16px;
   border-radius: 8px;
   border: 1px solid var(--border-panel);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-btn);
   color: var(--text-secondary);
   font-family: 'Inter', sans-serif;
   font-size: 12px;
@@ -1064,7 +1084,7 @@ html, body, #root {
 }
 
 .tour-btn:hover {
-  background: rgba(15, 23, 42, 0.9);
+  background: var(--bg-btn-hover);
   color: var(--text-primary);
 }
 
