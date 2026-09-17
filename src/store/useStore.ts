@@ -71,6 +71,10 @@ interface StoreState {
 
   // Advance tick (called by playback engine)
   advanceTick: () => void;
+
+  // Theme
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
 }
 
 function applyFaultModifiers(tick: TelemetryTick, modifiers: SensorModifiers): TelemetryTick {
@@ -128,8 +132,6 @@ export const useStore = create<StoreState>((set, get) => ({
   telemetryTick: 0,
   setTelemetryTick: (tick) => {
     const clamped = Math.max(0, Math.min(TOTAL_TICKS - 1, tick));
-    const effectiveTick = get().getEffectiveTick();
-    const health = computeSubsystemHealth(effectiveTick);
     set({
       telemetryTick: clamped,
       currentTick: MOCK_TELEMETRY[clamped],
@@ -216,4 +218,8 @@ export const useStore = create<StoreState>((set, get) => ({
 
     state.setTelemetryTick(nextTick);
   },
+
+  // Theme
+  theme: (localStorage.getItem('theme') as 'dark' | 'light') || 'dark',
+  toggleTheme: () => set(s => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })),
 }));

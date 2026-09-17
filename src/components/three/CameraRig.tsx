@@ -41,7 +41,7 @@ export function CameraRig() {
     }
   }, [selectedSubsystem]);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!controlsRef.current) return;
 
     if (lerpProgress.current < 1) {
@@ -68,10 +68,12 @@ export function CameraRig() {
       ref={controlsRef}
       enableDamping
       dampingFactor={0.05}
+      enablePan={true}
+      enableZoom={true}
+      enableRotate={true}
       minDistance={3}
-      maxDistance={25}
-      maxPolarAngle={Math.PI / 1.8}
-      enablePan={false}
+      maxDistance={15}
+      maxPolarAngle={Math.PI / 2 - 0.05}
     />
   );
 }

@@ -5,6 +5,7 @@ import { LeftHUD } from './components/layout/LeftHUD';
 import { RightHUD } from './components/layout/RightHUD';
 import { BottomBar } from './components/layout/BottomBar';
 import { WorkOrderModal } from './components/ui/WorkOrderModal';
+import { GuidedTour } from './components/ui/GuidedTour';
 import { useTelemetryEngine } from './hooks/useTelemetryEngine';
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
 
       {/* Work Order Modal */}
       <WorkOrderModal />
+
+      {/* Guided Onboarding Tour */}
+      <GuidedTour />
     </>
   );
 }
