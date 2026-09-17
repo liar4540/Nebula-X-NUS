@@ -7,10 +7,14 @@ import { BottomBar } from './components/layout/BottomBar';
 import { WorkOrderModal } from './components/ui/WorkOrderModal';
 import { GuidedTour } from './components/ui/GuidedTour';
 import { useTelemetryEngine } from './hooks/useTelemetryEngine';
+import { useTheme } from './hooks/useTheme';
 
 function App() {
   // Start the telemetry playback engine
   useTelemetryEngine();
+
+  // Sync theme class on <html> and persist to localStorage on every change
+  useTheme();
 
   return (
     <>

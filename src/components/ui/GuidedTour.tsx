@@ -109,24 +109,36 @@ export function GuidedTour() {
   switch (currentStep.placement) {
     case 'bottom':
       popoverStyle.top = spotlightRect.bottom + padding + 12;
-      popoverStyle.left = Math.max(16, spotlightRect.left + spotlightRect.width / 2 - 170);
+      popoverStyle.left = Math.max(16, Math.min(
+        window.innerWidth - 356,
+        spotlightRect.left + spotlightRect.width / 2 - 170
+      ));
       break;
     case 'top':
       popoverStyle.bottom = window.innerHeight - spotlightRect.top + padding + 12;
-      popoverStyle.left = Math.max(16, spotlightRect.left + spotlightRect.width / 2 - 170);
+      popoverStyle.left = Math.max(16, Math.min(
+        window.innerWidth - 356,
+        spotlightRect.left + spotlightRect.width / 2 - 170
+      ));
       break;
     case 'right':
       popoverStyle.top = Math.max(16, spotlightRect.top + spotlightRect.height / 2 - 80);
-      popoverStyle.left = spotlightRect.right + padding + 12;
+      popoverStyle.left = Math.min(
+        window.innerWidth - 356,
+        spotlightRect.right + padding + 12
+      );
       break;
     case 'left':
       popoverStyle.top = Math.max(16, spotlightRect.top + spotlightRect.height / 2 - 80);
-      popoverStyle.right = window.innerWidth - spotlightRect.left + padding + 12;
+      popoverStyle.right = Math.max(16, window.innerWidth - spotlightRect.left + padding + 12);
       break;
   }
 
   return (
     <div className="tour-overlay">
+      {/* Full-screen backdrop that blocks interaction */}
+      <div className="tour-backdrop" onClick={handleSkip} />
+
       {/* Spotlight cutout */}
       <div
         className="tour-spotlight"
