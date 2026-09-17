@@ -14,7 +14,7 @@ export function LeftHUD() {
   return (
     <div className="left-hud">
       <div className="left-hud-inner glass-panel-solid">
-        <div className="hud-section-title">Monitored Subsystems</div>
+        <div className="hud-section-title" data-tour-id="subsystem-health">Monitored Subsystems</div>
 
         {SUBSYSTEMS.map(sub => {
           const score = subsystemHealth[sub.id] ?? 0;

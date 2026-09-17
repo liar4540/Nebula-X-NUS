@@ -1,5 +1,9 @@
+import { useState, useRef, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { TRAIN_CONFIGS } from '../../data/trainConfigs';
+import { useTheme } from '../../hooks/useTheme';
+import { restartTour } from '../ui/GuidedTour';
+import { Settings, Sun, Moon, BookOpen } from 'lucide-react';
 
 export function TopBar() {
   const selectedTrain = useStore(s => s.selectedTrain);
@@ -8,6 +12,22 @@ export function TopBar() {
   const demoMode = useStore(s => s.demoMode);
   const setDemoMode = useStore(s => s.setDemoMode);
   const subsystemHealth = useStore(s => s.subsystemHealth);
+  const { theme, toggleTheme } = useTheme();
+
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
+
+  // Close settings dropdown on outside click
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [settingsOpen]);
 
   // Fleet health: % of subsystems that are normal
   const normalCount = Object.values(subsystemHealth).filter(s => s < 0.3).length;
@@ -64,6 +84,46 @@ export function TopBar() {
             onClick={() => setDemoMode(!demoMode)}
           >
             Demo Mode [{demoMode ? 'ON' : 'OFF'}]
+          </div>
+
+          {/* Settings gear */}
+          <div ref={settingsRef} style={{ position: 'relative' }}>
+            <button
+              className="playback-btn"
+              onClick={() => setSettingsOpen(!settingsOpen)}
+              style={{ width: 32, height: 32 }}
+            >
+              <Settings size={15} />
+            </button>
+
+            {settingsOpen && (
+              <div className="settings-dropdown">
+                {/* Theme toggle */}
+                <button className="settings-item" onClick={toggleTheme}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {theme === 'dark' ? <Moon size={14} /> : <Sun size={14} />}
+                    {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                  </span>
+                  <div className={`theme-switch ${theme === 'light' ? 'active' : ''}`}>
+                    <div className="theme-switch-knob" />
+                  </div>
+                </button>
+
+                {/* Restart tutorial */}
+                <button
+                  className="settings-item"
+                  onClick={() => {
+                    setSettingsOpen(false);
+                    restartTour();
+                  }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <BookOpen size={14} />
+                    Restart Tutorial
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useStore } from '../../store/useStore';
 import type { SubsystemId } from '../../lib/constants';
-import { SUBSYSTEMS, THRESHOLDS, COLORS } from '../../lib/constants';
+import { THRESHOLDS, COLORS } from '../../lib/constants';
 
 interface SubsystemWrapperProps {
   subsystemId: SubsystemId;
@@ -11,8 +11,15 @@ interface SubsystemWrapperProps {
   position?: [number, number, number];
 }
 
+const STATUS_COLORS = {
+  good: new THREE.Color(COLORS.three.glowGreen),
+  warning: new THREE.Color(COLORS.three.glowAmber),
+  broken: new THREE.Color(COLORS.three.glowRed),
+};
+
 export function SubsystemWrapper({ subsystemId, children, position = [0, 0, 0] }: SubsystemWrapperProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const originalColorsRef = useRef<Map<THREE.Mesh, THREE.Color>>(new Map());
   const [hovered, setHovered] = useState(false);
   const selectedSubsystem = useStore(s => s.selectedSubsystem);
   const setSelectedSubsystem = useStore(s => s.setSelectedSubsystem);
@@ -21,44 +28,52 @@ export function SubsystemWrapper({ subsystemId, children, position = [0, 0, 0] }
   const isSelected = selectedSubsystem === subsystemId;
   const healthScore = subsystemHealth[subsystemId] ?? 0;
 
-  // Determine glow color based on health score
-  const glowColor = useMemo(() => {
-    if (healthScore >= THRESHOLDS.critical) return new THREE.Color(COLORS.three.glowRed);
-    if (healthScore >= THRESHOLDS.warning) return new THREE.Color(COLORS.three.glowAmber);
-    return new THREE.Color(COLORS.three.glowGreen);
+  // Determine status color based on health score
+  const statusColor = useMemo(() => {
+    if (healthScore >= THRESHOLDS.critical) return STATUS_COLORS.broken;
+    if (healthScore >= THRESHOLDS.warning) return STATUS_COLORS.warning;
+    return STATUS_COLORS.good;
   }, [healthScore]);
 
-  // Animate glow intensity
+  // Animate glow intensity and tint mesh base color
   useFrame((state) => {
     if (!groupRef.current) return;
     const time = state.clock.elapsedTime;
 
-    // Pulsating glow when anomaly is detected
-    if (healthScore >= THRESHOLDS.critical) {
-      const pulse = Math.sin(time * 4) * 0.5 + 0.5;
-      groupRef.current.children.forEach(child => {
-        if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-          child.material.emissive = glowColor;
-          child.material.emissiveIntensity = 0.3 + pulse * 0.7;
+    groupRef.current.traverse((child) => {
+      if (!(child instanceof THREE.Mesh) || !(child.material instanceof THREE.MeshStandardMaterial)) return;
+
+      const mat = child.material;
+
+      // Store original color on first encounter
+      if (!originalColorsRef.current.has(child)) {
+        originalColorsRef.current.set(child, mat.color.clone());
+      }
+      const originalColor = originalColorsRef.current.get(child)!;
+
+      if (healthScore >= THRESHOLDS.critical) {
+        // Critical: tint mesh red + pulsating emissive
+        const pulse = Math.sin(time * 4) * 0.5 + 0.5;
+        mat.color.copy(originalColor).lerp(STATUS_COLORS.broken, 0.4);
+        mat.emissive.copy(statusColor);
+        mat.emissiveIntensity = 0.3 + pulse * 0.7;
+      } else if (healthScore >= THRESHOLDS.warning) {
+        // Warning: tint mesh orange + gentle pulse
+        mat.color.copy(originalColor).lerp(STATUS_COLORS.warning, 0.25);
+        mat.emissive.copy(statusColor);
+        mat.emissiveIntensity = 0.15 + Math.sin(time * 2) * 0.1;
+      } else {
+        // Normal: restore original color + subtle green emissive when healthy
+        mat.color.copy(originalColor);
+        if (hovered || isSelected) {
+          mat.emissive.set(0x06b6d4);
+          mat.emissiveIntensity = isSelected ? 0.3 : 0.12;
+        } else {
+          mat.emissive.copy(STATUS_COLORS.good);
+          mat.emissiveIntensity = 0.03;
         }
-      });
-    } else if (healthScore >= THRESHOLDS.warning) {
-      groupRef.current.children.forEach(child => {
-        if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-          child.material.emissive = glowColor;
-          child.material.emissiveIntensity = 0.15 + Math.sin(time * 2) * 0.1;
-        }
-      });
-    } else {
-      groupRef.current.children.forEach(child => {
-        if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-          child.material.emissiveIntensity = hovered || isSelected ? 0.08 : 0;
-          if (hovered || isSelected) {
-            child.material.emissive = new THREE.Color(0x06b6d4);
-          }
-        }
-      });
-    }
+      }
+    });
   });
 
   return (

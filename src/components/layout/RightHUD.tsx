@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useStore } from '../../store/useStore';
-import { ML_MODELS, type ModelId } from '../../lib/constants';
+import { ML_MODELS } from '../../lib/constants';
 import { getStatusColor, getStatusLabel } from '../../lib/utils';
+import { Tooltip } from '../ui/Tooltip';
 
 export function RightHUD() {
   const selectedModel = useStore(s => s.selectedModel);
@@ -11,7 +12,6 @@ export function RightHUD() {
 
   // Get score for selected model
   const activeScore = anomalyScores[selectedModel] ?? 0;
-  const scorePercent = Math.round(activeScore * 100);
   const scoreColor = getStatusColor(activeScore);
   const scoreLabel = getStatusLabel(activeScore);
 
@@ -37,7 +37,7 @@ export function RightHUD() {
           </div>
         </div>
 
-        <div className="hud-section-title">Model Comparison</div>
+        <div className="hud-section-title" data-tour-id="ml-diagnostics">Model Comparison</div>
 
         {/* Model Cards */}
         {ML_MODELS.map(model => {
@@ -45,35 +45,40 @@ export function RightHUD() {
           const modelScore = anomalyScores[model.id] ?? 0;
 
           return (
-            <div
+            <Tooltip
               key={model.id}
-              className={`model-card ${isActive ? 'active' : ''}`}
-              onClick={() => setSelectedModel(model.id)}
+              label={model.strength}
+              placement="left"
             >
-              <div className="model-card-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div className={`model-radio ${isActive ? 'active' : ''}`} />
-                  <span className="model-name">{model.label}</span>
+              <div
+                className={`model-card ${isActive ? 'active' : ''}`}
+                onClick={() => setSelectedModel(model.id)}
+              >
+                <div className="model-card-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div className={`model-radio ${isActive ? 'active' : ''}`} />
+                    <span className="model-name">{model.label}</span>
+                  </div>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: getStatusColor(modelScore),
+                  }}>
+                    {Math.round(modelScore * 100)}%
+                  </span>
                 </div>
-                <span style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: getStatusColor(modelScore),
-                }}>
-                  {Math.round(modelScore * 100)}%
-                </span>
-              </div>
-              <div className="model-meta">
-                <span>⏱ {model.latency}</span>
-                <span>🔮 {model.leadTime}</span>
-              </div>
-              {isActive && (
-                <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
-                  {model.strength}
+                <div className="model-meta">
+                  <span>⏱ {model.latency}</span>
+                  <span>🔮 {model.leadTime}</span>
                 </div>
-              )}
-            </div>
+                {isActive && (
+                  <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
+                    {model.strength}
+                  </div>
+                )}
+              </div>
+            </Tooltip>
           );
         })}
 

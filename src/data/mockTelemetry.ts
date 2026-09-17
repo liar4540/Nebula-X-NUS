@@ -31,10 +31,7 @@ export function generateMockTelemetry(): TelemetryTick[] {
   const baseTime = Date.now() - TOTAL_TICKS * 1000;
 
   for (let i = 0; i < TOTAL_TICKS; i++) {
-    const t = i / TOTAL_TICKS; // 0 to 1 progress
-
     // Phase detection
-    const isNormal = i < 200;
     const isDrift = i >= 200 && i < 350;
     const isAcute = i >= 350;
 
